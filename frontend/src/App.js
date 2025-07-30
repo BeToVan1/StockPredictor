@@ -59,7 +59,7 @@ function App() {
             📊 Predicted Price in {daysAhead} day(s): ${parseFloat(prediction).toFixed(2)}
           </h2>
         )}
-        {error && <p className="error">❌ {error}</p>}
+        {!loading && error && <p className="error">❌ {error}</p>}
       </div>
     </div>
   </div>
