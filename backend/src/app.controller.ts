@@ -14,7 +14,7 @@ export class PredictController {
     const prediction = await this.predictService.predict(
       ticker,
       parseInt('60'),
-      parseInt(daysAhead || '1'),
+      parseInt(daysAhead),
     );
     return prediction;
   }

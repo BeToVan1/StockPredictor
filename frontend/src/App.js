@@ -3,22 +3,24 @@ import axios from 'axios';
 import './App.css';
 
 function App() {
-  const [ticker, setTicker] = useState('AMD');
-  const [daysAhead, setDaysAhead] = useState(5);
+  const [ticker, setTicker] = useState('');
+  const [daysAhead, setDaysAhead] = useState('');
+  const [inputDaysAhead, setInputDaysAhead] = useState('');
   const [prediction, setPrediction] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const handlePredict = async () => {
     setLoading(true);
+    
     try {
       const response = await axios.get('http://localhost:3000/predict', {
         params: {
           ticker,
-          days: daysAhead,
+          daysAhead: inputDaysAhead,
         },
       });
-
+      setDaysAhead(inputDaysAhead);
       setPrediction(response.data.prediction);
       //console.log(`PREDICTION: ${response.data.prediction}`);
       setError(null);
@@ -45,8 +47,8 @@ function App() {
         <label>Days Ahead: </label>
         <input
           type="number"
-          value={daysAhead}
-          onChange={(e) => setDaysAhead(e.target.value)}
+          value={inputDaysAhead}
+          onChange={(e) => setInputDaysAhead(e.target.value)}
         />
       </div>
 
