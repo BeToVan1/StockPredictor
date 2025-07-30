@@ -1,0 +1,44 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #1f1e1e;
+}
+
+.predictor-box {
+  padding: 2rem;
+  text-align: center;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.predictor-box input {
+  margin: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.predictor-box button {
+  margin-top: 1rem;
+  padding: 0.5rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  background-color: #1f1e1e;
+  color: white;
+  cursor: pointer;
+}
+
+.predictor-box button:hover {
+  background-color: #0056b3;
+}
+
+.result {
+  margin-top: 2rem;
+}
+
+.error {
+  color: red;
+}

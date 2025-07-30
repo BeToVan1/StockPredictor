@@ -2,39 +2,54 @@ import numpy as np
 import pandas as pd
 import yfinance as yf
 import keras
-from sklearn.preprocessing import MinMaxScaler
 import pickle
+import sys
+import json
+import os
+import time
+from train_model import train
 
-def predict_next_close(ticker, window_size):
-    # load model
-    model = keras.models.load_model(f"../models/lstm_model_{ticker}_day.keras")
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-    # Fetch data (ensures at least window size)
-    df = yf.download(ticker, period=f"{window_size + 10}d", interval="1d")
-    df["MA5"] = df["Close"].rolling(5).mean()
-    df["MA10"] = df["Close"].rolling(10).mean()
-    df = df.dropna()
+def predict_future_close(ticker, window_size, days_ahead):
+    model_path = f"../ml-service/models/lstm_model_{ticker}_day.keras"
+    scaler_path = f"../ml-service/models/scaler_{ticker}.pkl"
 
-    features = df[["Close", "MA5", "MA10"]]
+    #Train model if not present
+    if not os.path.exists(model_path) or not os.path.exists(scaler_path):
+        train(ticker, '2y', '1d', 60)
 
-    with open(f"../models/scaler_{ticker}.pkl", "rb") as f:
+    # Load model and scaler
+    model = keras.models.load_model(model_path)
+    with open(scaler_path, "rb") as f:
         scaler = pickle.load(f)
 
-    scaled = scaler.transform(features)
-    last_window = scaled[-window_size:]
-    last_window = last_window.reshape((1, window_size, 3))
+    # Fetch recent closing prices (extra days in case of market closures)
+    df = yf.download(ticker, period=f"{window_size + 10}d", interval="1d")
+    df = df.dropna()
+    close_prices = df["Close"].values.reshape(-1, 1)
 
-    model = keras.models.load_model(f"../models/lstm_model_{ticker}_day.keras")
+    # Scale and create the last window
+    scaled = scaler.transform(close_prices)
+    last_window = scaled[-window_size:].reshape(1, window_size, 1)
 
-    # Make prediction
-    pred_scaled = model.predict(last_window)[0][0]
+    # Predict iteratively
+    for _ in range(days_ahead):
+        next_scaled = model.predict(last_window, verbose=0)[0][0]  # Predict next day
+        next_scaled = np.array([next_scaled])  # Reshape for stacking
+        # Slide window: remove first, append new prediction
+        last_window = np.append(last_window[:, 1:, :], [[next_scaled]], axis=1)
 
-    # Inverse transform to get actual predicted close price
-    pred_scaled_vector = np.array([[pred_scaled, 0, 0]])  # padding dummy values for MA5 and MA10
-    pred_actual = scaler.inverse_transform(pred_scaled_vector)[0][0]  # only use the 'Close' column
-
-    print(f"📈 Predicted next close for {ticker}: ${pred_actual:.2f}")
-    return pred_actual
+    # Inverse scale the final prediction
+    future_price = scaler.inverse_transform([next_scaled])[0][0]
+    # print(f"Predicted close in {days_ahead} trading days for {ticker}: ${future_price:.2f}")
+    return future_price
 
 if __name__ == "__main__":
-    predict_next_close('TGT', 60)
+    ticker = sys.argv[1]
+    window_size = int(sys.argv[2])
+    days_ahead = int(sys.argv[3])
+
+    prediction = predict_future_close(ticker, window_size, days_ahead)
+    print(json.dumps({"ticker": ticker, "prediction" : float(prediction)}))
+   
