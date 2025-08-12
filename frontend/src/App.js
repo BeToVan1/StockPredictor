@@ -9,6 +9,7 @@ function App() {
   const [prediction, setPrediction] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [news, setNews] = useState([]);
 
   const handlePredict = async () => {
     setLoading(true);
@@ -23,6 +24,12 @@ function App() {
       setDaysAhead(inputDaysAhead);
       setPrediction(response.data.prediction);
       //console.log(`PREDICTION: ${response.data.prediction}`);
+
+      // Fetch news
+      const newsResponse = await axios.get('http://localhost:3000/news', {
+        params: {ticker: ticker},
+      });
+      setNews(newsResponse.data.articles);
       setError(null);
     } catch (err) {
       //console.log(err);
@@ -63,6 +70,24 @@ function App() {
         )}
         {!loading && error && <p className="error">❌ {error}</p>}
       </div>
+      {/* News Section */}
+      {!loading && news.length > 0 && (
+      <div className="news-section">
+        <h3>📰 Recent News about {ticker.toUpperCase()}</h3>
+        <ul>
+          {news.map((article) => (
+            <li key={article.id || article.url} className="news-item">
+              <span className="news-date">
+                {new Date(article.datetime * 1000).toLocaleDateString()}:
+              </span>{' '}
+              <a href={article.url} target="_blank" rel="noopener noreferrer" className="news-link">
+                {article.headline || article.summary || 'News Article'}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+        )}
     </div>
   </div>
   );

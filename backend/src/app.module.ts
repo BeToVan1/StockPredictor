@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
-import { PredictController } from './app.controller';
-import { PredictService } from './app.service';
+import {ConfigModule} from '@nestjs/config';
+import { PredictController, NewsController } from './app.controller';
+import { PredictService, NewsService } from './app.service';
 
 @Module({
-  imports: [],
-  controllers: [PredictController],
-  providers: [PredictService],
+  imports: [ConfigModule.forRoot()],
+  controllers: [PredictController, NewsController],
+  providers: [PredictService, NewsService],
 })
 export class AppModule {}

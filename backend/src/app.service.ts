@@ -1,5 +1,7 @@
 import { exec } from 'child_process';
 import { Injectable } from '@nestjs/common';
+import * as finnhub from 'finnhub';
+import axios from 'axios';
 
 @Injectable()
 export class PredictService {
@@ -21,5 +23,16 @@ export class PredictService {
         }
       });
     });
+  }
+}
+
+@Injectable()
+export class NewsService {
+  async getCompanyNews(symbol: string, from: string, to: string) {
+    const url = `https://finnhub.io/api/v1/company-news?symbol=${symbol}&from=${from}&to=${to}&token=${process.env.FINNHUB_API_KEY}`;
+    const { data } = await axios.get(url);
+    console.log("HELLO");
+    console.log(data);
+    return data;
   }
 }
