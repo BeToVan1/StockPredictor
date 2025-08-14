@@ -2,5 +2,9 @@
   "dependencies": {
     "@nestjs/config": "^4.0.2",
     "axios": "^1.11.0"
+  },
+  "scripts": {
+    "start": "cd backend && node start && cd frontend && node start"
   }
 }
+
