@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
   app.enableCors({
-    origin: 'http://localhost:3001', // allow React frontend
+    origin: 'https://stockpredictor-0lwg.onrender.com', // allow React frontend
     methods: 'GET,POST',
     credentials: true,
   });
