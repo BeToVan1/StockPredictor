@@ -2,12 +2,15 @@ import { exec } from 'child_process';
 import { Injectable } from '@nestjs/common';
 import * as finnhub from 'finnhub';
 import axios from 'axios';
+import * as path from 'path';
 
 @Injectable()
 export class PredictService {
   async predict(ticker: string, windowSize = 60, daysAhead = 5): Promise<any> {
     return new Promise((resolve, reject) => {
-      const command = `python ../ml-service/inference/predict_next_close.py ${ticker} ${windowSize} ${daysAhead}`;
+      const scriptPath = path.join(__dirname, '../../ml-service/inference/predict_next_close.py')
+      const command = `python ${scriptPath} ${ticker} ${windowSize} ${daysAhead}`;
+      console.log('Running command: ', command);
       exec(command, (error, stdout, stderr) => {
         if (error) {
           console.error(`❌ Python Error: ${stderr}`);

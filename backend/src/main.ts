@@ -6,6 +6,7 @@ async function bootstrap() {
   const allowedOrigins = [
     'https://stockpredictor-frontend.onrender.com',
     'https://stockpredictor-0lwg.onrender.com',
+    'http://localhost:3001'
   ];
   const app = await NestFactory.create(AppModule);
   

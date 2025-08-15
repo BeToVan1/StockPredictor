@@ -1,0 +1,9 @@
+pandas
+numpy
+scikit-learn
+yfinance
+pickle
+json
+os
+sys
+sklearn
