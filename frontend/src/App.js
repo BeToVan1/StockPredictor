@@ -15,7 +15,7 @@ function App() {
     setLoading(true);
     
     try {
-      const response = await axios.get('http://localhost:3000/predict', {
+      const response = await axios.get('stockpredictor-0lwg.onrender.com/predict', {
         params: {
           ticker,
           daysAhead: inputDaysAhead,
@@ -26,7 +26,7 @@ function App() {
       //console.log(`PREDICTION: ${response.data.prediction}`);
 
       // Fetch news
-      const newsResponse = await axios.get('http://localhost:3000/news', {
+      const newsResponse = await axios.get('stockpredictor-0lwg.onrender.com/news', {
         params: {ticker: ticker},
       });
       setNews(newsResponse.data.articles);
